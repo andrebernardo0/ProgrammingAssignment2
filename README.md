@@ -1,105 +1,102 @@
-### Introduction
+### About this repository
 
-This second programming assignment will require you to write an R
-function that is able to cache potentially time-consuming computations.
-For example, taking the mean of a numeric vector is typically a fast
-operation. However, for a very long vector, it may take too long to
-compute the mean, especially if it has to be computed repeatedly (e.g.
-in a loop). If the contents of a vector are not changing, it may make
-sense to cache the value of the mean so that when we need it again, it
-can be looked up in the cache rather than recomputed. In this
-Programming Assignment you will take advantage of the scoping rules of
-the R language and how they can be manipulated to preserve state inside
-of an R object.
+This repository was created for the peer-graded assignment of:
 
-### Example: Caching the Mean of a Vector
+Course 3: Getting And Cleaning Data, from Data Science Specialization, by Johns Hopkins University, on coursera
 
-In this example we introduce the `<<-` operator which can be used to
-assign a value to an object in an environment that is different from the
-current environment. Below are two functions that are used to create a
-special object that stores a numeric vector and caches its mean.
+The course is taught by:
 
-The first function, `makeVector` creates a special "vector", which is
-really a list containing a function to
+Jeff Leek, Phd
+Roger D. Peng, Phd
+Brian Caffo, Phd
 
-1.  set the value of the vector
-2.  get the value of the vector
-3.  set the value of the mean
-4.  get the value of the mean
+As putted by the teachers of the course:
 
-<!-- -->
+The purpose of the assignment is to demonstrate your ability to collect, work with, and clean a data set. The goal is to prepare tidy data that can be used for later analysis.
 
-    makeVector <- function(x = numeric()) {
-            m <- NULL
-            set <- function(y) {
-                    x <<- y
-                    m <<- NULL
-            }
-            get <- function() x
-            setmean <- function(mean) m <<- mean
-            getmean <- function() m
-            list(set = set, get = get,
-                 setmean = setmean,
-                 getmean = getmean)
-    }
+The assignment asked to:
 
-The following function calculates the mean of the special "vector"
-created with the above function. However, it first checks to see if the
-mean has already been calculated. If so, it `get`s the mean from the
-cache and skips the computation. Otherwise, it calculates the mean of
-the data and sets the value of the mean in the cache via the `setmean`
-function.
+You will be required to submit:
 
-    cachemean <- function(x, ...) {
-            m <- x$getmean()
-            if(!is.null(m)) {
-                    message("getting cached data")
-                    return(m)
-            }
-            data <- x$get()
-            m <- mean(data, ...)
-            x$setmean(m)
-            m
-    }
+a tidy data set as described below
+a link to a Github repository with your script for performing the analysis, and
+a code book that describes the variables, the data, and any transformations or work that you performed to clean up the data called CodeBook.md.
+You should also include a README.md in the repo with your scripts. This repo explains how all of the scripts work and how they are connected.
 
-### Assignment: Caching the Inverse of a Matrix
+and for the main script, 'run_analysis.R' the requirements was that it should be able to run, as far as the 'UCI HAR Dataset' is present in the working directory and to be able to perform the following 5 steps:
 
-Matrix inversion is usually a costly computation and there may be some
-benefit to caching the inverse of a matrix rather than computing it
-repeatedly (there are also alternatives to matrix inversion that we will
-not discuss here). Your assignment is to write a pair of functions that
-cache the inverse of a matrix.
+1.  Merges the training and the test sets to create one data set.
+2.  Extracts only the measurements on the mean and standard deviation for each measurement.
+3.  Uses descriptive activity names to name the activities in the data set
+4.  Appropriately labels the data set with descriptive variable names.
+5.  From the data set in step 4, creates a second, independent tidy data set with the average of each variable for each activity and each subject.
 
-Write the following functions:
+###Details on the files that exist in this repository
 
-1.  `makeCacheMatrix`: This function creates a special "matrix" object
-    that can cache its inverse.
-2.  `cacheSolve`: This function computes the inverse of the special
-    "matrix" returned by `makeCacheMatrix` above. If the inverse has
-    already been calculated (and the matrix has not changed), then
-    `cacheSolve` should retrieve the inverse from the cache.
+##README.md
 
-Computing the inverse of a square matrix can be done with the `solve`
-function in R. For example, if `X` is a square invertible matrix, then
-`solve(X)` returns its inverse.
+It is the file you read right now and tries to explain the purpose and the contents of the repository.
 
-For this assignment, assume that the matrix supplied is always
-invertible.
 
-In order to complete this assignment, you must do the following:
+##run_analysis.R
 
-1.  Fork the GitHub repository containing the stub R files at
-    [https://github.com/rdpeng/ProgrammingAssignment2](https://github.com/rdpeng/ProgrammingAssignment2)
-    to create a copy under your own account.
-2.  Clone your forked GitHub repository to your computer so that you can
-    edit the files locally on your own machine.
-3.  Edit the R file contained in the git repository and place your
-    solution in that file (please do not rename the file).
-4.  Commit your completed R file into YOUR git repository and push your
-    git branch to the GitHub repository under your account.
-5.  Submit to Coursera the URL to your GitHub repository that contains
-    the completed R code for the assignment.
+It is the main script of the repository. As it is described in 'CodeBood.md':
 
-### Grading
+In order to produce the 'tidy_data_summary' table, the script 'run_analysis.R' was created and used. It performs the following tasks:
 
-This assignment will be graded via peer assessment.
+Merges the training and the test sets to create one data set with target variables.
+Binds these files,
+
+UCI HAR Dataset/train/subject_train.txt
+UCI HAR Dataset/train/X_train.txt
+UCI HAR Dataset/train/y_train.txt
+from the train set by columns to a table that contains, the human subject, the activity performed and the values of the features.
+
+Binds these files,
+
+UCI HAR Dataset/test/subject_test.txt
+UCI HAR Dataset/test/X_test.txt
+UCI HAR Dataset/test/y_test.txt
+from the test set by columns to a table that contains, the human subject, the activity performed and the values of the features.
+
+Binds the data frames created for test and train set into one large dataset by rows.
+
+Extracts only the measurements on the mean and standard deviation for each measurement.
+Finds the target features, which are the features with measurements about mean and standard deviation, and extracts them as well as those that indicate the 'subject' and 'activity' and creates a new data table only with the target variables.
+Uses descriptive activity names to name the activities in the data set.
+Replace the variable about activity, that contains integers from 1 to 6, with a factor based on levels and labels contained in the 'activity_labels' data file.
+Appropriately labels the data set with target variables with descriptive names.
+Extracts the target variable names from 'features.txt'.
+Corrects a typo that exists in some feature names, that is to replace 'BodyBody' that appears in the names of some features with just 'Body'.
+Creates a new tidy dataset with the appropriate labels for the variable names.
+From the data set in step 4, creates a second, independent tidy data set with the average of each variable for each activity and each subject.
+Group the tidy data table created in step 4, by 'subject' and 'activity'.
+
+Summarize each variable to find the average for the grouped values.
+
+Ungroup the data table.
+
+Add descriptive names to the variables of the new tidy data table, by adding the prefix 'Avrg-' in the names of the target feature averages.
+
+
+##tidy_data_summary.txt
+
+The tidy dataset that was produced by the script 'run_analysis.txt', which contains the averages of selected features from the original 'Human Activity Recognition Using Smartphones Dataset Version 1.0'. The 'CodeBook.md' contains the details about the 'tidy_data_summary' table.
+
+##Code Book.md
+
+The code book contains informations on the 'tidy_data_summary' table. It consists of the following:
+
+0.  Table of Contents
+1.  Informations on 'tidy_data_summary' data table
+    Identificators and averages of features
+    Description for the variables of 'tidy_data_summary'
+    How to load 'tidy_data_summary' in R
+    About 'tidy_data_summary' table
+2.  The process by which the 'tidy_data_summary' table was produced
+3.  Description of the features on which the averages were based
+    Informations on how the features were produced from the raw data
+    Informations on the collection of raw data
+    About the original data set
+4.  License
+
